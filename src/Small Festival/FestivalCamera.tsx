@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Camera, useFrame } from "react-three-fiber";
 import { Vector3 } from "three";
-import { IActivityZone } from "../utils";
+import { IAnimationData } from "../utils";
 
 interface IFestivalCamera {
     towardsTableAnimData: IAnimationData
@@ -15,12 +15,6 @@ interface ICameraMovement {
     currentLookAt: Vector3
     targetLookAt: Vector3
     OnFinishMovement: () => void
-}
-
-interface IAnimationData {
-    triggerAnim: boolean,
-    onFinishAnim: () => void,
-    zoneTransformData: IActivityZone
 }
 
 const FestivalCamera = (props: IFestivalCamera) => {

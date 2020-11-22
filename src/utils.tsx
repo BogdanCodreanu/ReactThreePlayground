@@ -10,3 +10,9 @@ export interface IActivityZone {
     cameraPositionTarget: Vector3
     cameraLookAtTarget: Vector3
 }
+
+export interface IAnimationData {
+    triggerAnim: boolean,
+    onFinishAnim?: () => void,
+    zoneTransformData: IActivityZone
+}

@@ -2,11 +2,12 @@ import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "react-three-fiber";
 import { useGLTFLoader } from "drei";
 import * as THREE from "three";
+import { Vector3 } from "three";
 import FestivalCamera from "./FestivalCamera";
 import GizmoAxis from "../GizmoAxis";
 import ActivitySelect from "./ActivitySelect";
 import { IActivityZone } from "../utils";
-import { Vector3 } from "three";
+import FestivalTable from "./FestivalTable";
 
 interface ISceneProps {
     OnReachedActivityZone: (zoneName: string) => void
@@ -24,8 +25,15 @@ const Scene = (props: ISceneProps) => {
 
     const [canEnterZones, setCanEnterZones] = useState(true);
 
+    const [userAtTable, setUserAtTable] = useState(false);
+
     if (!sceneTraversed) {
         tableZoneRef.current = {
+            cameraPositionTarget: null,
+            cameraLookAtTarget: null,
+        };
+
+        startZoneRef.current = {
             cameraPositionTarget: null,
             cameraLookAtTarget: null,
         };
@@ -42,10 +50,8 @@ const Scene = (props: ISceneProps) => {
                 node.children[0].receiveShadow = true;
             }
             if (node.name === 'Camera') {
-                startZoneRef.current = {
-                    cameraPositionTarget: node.position,
-                    cameraLookAtTarget: new Vector3()
-                };
+                startZoneRef.current.cameraPositionTarget = node.position.clone();
+                startZoneRef.current.cameraLookAtTarget = new Vector3(0, 0, 0);
             }
 
             if (node.name.startsWith('Table') && node.children.length > 0) {
@@ -53,9 +59,7 @@ const Scene = (props: ISceneProps) => {
             }
 
             if (node.name === 'TableCameraZoom') {
-                tableZoneRef.current.cameraPositionTarget =
-                    node.position.clone();
-
+                tableZoneRef.current.cameraPositionTarget = node.position.clone();
             }
         });
         console.log('Scene traversed and initialized');
@@ -64,14 +68,13 @@ const Scene = (props: ISceneProps) => {
     }
 
     useEffect(() => {
-        props.SubscribeToParent(() => {
-            setCameraZoomingTowardsStart(true);
-        });
-    })
+        props.SubscribeToParent(onBackClick);
+        setUserAtTable(false);
+    });
 
-    console.log('wave pass on scene');
-
-
+    const onBackClick = () => {
+        setCameraZoomingTowardsStart(true);
+    }
     const onTableClick = () => {
         if (!cameraZoomingTowardsTable && canEnterZones) {
             setCanEnterZones(false);
@@ -81,6 +84,7 @@ const Scene = (props: ISceneProps) => {
 
     const onReachTable = () => {
         setCameraZoomingTowardsTable(false);
+        setUserAtTable(true);
         props.OnReachedActivityZone('Table');
     };
 
@@ -94,17 +98,18 @@ const Scene = (props: ISceneProps) => {
         <group >
             <Lightning />
             <FestivalCamera
-                            towardsTableAnimData={{
-                                onFinishAnim: onReachTable,
-                                zoneTransformData: tableZoneRef.current,
-                                triggerAnim: cameraZoomingTowardsTable,
-                            }}
-                            towardsStartAnimData={{
-                                onFinishAnim: onReachStart,
-                                zoneTransformData: startZoneRef.current,
-                                triggerAnim: cameraZoomingTowardsStart
-                            }}
+                towardsTableAnimData={{
+                    onFinishAnim: onReachTable,
+                    zoneTransformData: tableZoneRef.current,
+                    triggerAnim: cameraZoomingTowardsTable,
+                }}
+                towardsStartAnimData={{
+                    onFinishAnim: onReachStart,
+                    zoneTransformData: startZoneRef.current,
+                    triggerAnim: cameraZoomingTowardsStart,
+                }}
             />
+            <FestivalTable userIsHere={userAtTable} />
             <GroundPlane />
             <GizmoAxis scale={[3, 3, 3]} />
             <mesh >
