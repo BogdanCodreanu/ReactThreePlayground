@@ -1,26 +1,27 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+import WobblyBoxes from "./WobblyBoxes";
+import AnimatedCubes from "./AnimatedCubes";
+import SpringAnimations from "./SpringAnimations";
+
+import { BrowserRouter, Route, Switch } from "react-router-dom";
+import Header from "./Header";
+import Chairs from "./Chairs";
+import SmallFestival from "./Small Festival/SmallFestival";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    return (
+        <BrowserRouter basename={"/"} >
+            <Header />
+            <Switch >
+                <Route exact path="/scene1" component={AnimatedCubes} />
+                <Route exact path="/scene2" component={WobblyBoxes} />
+                <Route exact path="/scene3" component={SpringAnimations} />
+                <Route exact path="/scene4" component={Chairs} />
+                <Route exact path="/scene5" component={SmallFestival} />
+            </Switch >
+        </BrowserRouter >
+    );
 }
 
 export default App;
