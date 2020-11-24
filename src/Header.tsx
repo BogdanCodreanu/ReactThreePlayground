@@ -9,6 +9,7 @@ function Header() {
     const onClick3 = () => history.push("scene3");
     const onClick4 = () => history.push("scene4");
     const onClick5 = () => history.push("scene5");
+    const onClick6 = () => history.push("scene6");
 
     return (
         <div className="container" >
@@ -18,6 +19,7 @@ function Header() {
                 <div className="routerdiv" onClick={onClick3} >cubes matrix</div >
                 <div className="routerdiv" onClick={onClick4} >sofas</div >
                 <div className="routerdiv" onClick={onClick5} >festival</div >
+                <div className="routerdiv" onClick={onClick6} >Scrollable train</div >
             </div >
         </div >
     );

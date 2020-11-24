@@ -120,7 +120,9 @@ const SpringAnimations = () => {
 
     const onClickChild = (color: string, XPos: number, ZPos: number) => {
         const affected = (boxes.filter(box => box.x !== XPos || box.z !== ZPos)
-            .filter(box => box.x === XPos || box.z === ZPos));
+            .filter(box => box.x === XPos || box.z === ZPos))
+            .filter(box => Math.abs(box.x - XPos) < 2 && Math.abs(box.z - ZPos) < 2)
+        ;
         affected.forEach(box => box.changeColor(color));
     };
 

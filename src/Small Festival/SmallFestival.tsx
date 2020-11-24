@@ -7,7 +7,6 @@ import FestivalCamera from "./FestivalCamera";
 import GizmoAxis from "../GizmoAxis";
 import ActivitySelect from "./ActivitySelect";
 import { IActivityZone } from "../utils";
-import FestivalTable from "./FestivalTable";
 import FestivalWheel from "./FestivalWheel";
 
 interface ISceneProps {
@@ -56,7 +55,7 @@ const Scene = (props: ISceneProps) => {
         gltf.scene.traverse(node => {
             if (node.type === "Mesh") {
                 node.castShadow = true;
-                node.receiveShadow = true
+                node.receiveShadow = true;
             }
             if (node.type ===
                 "Group" &&
@@ -174,7 +173,6 @@ const Scene = (props: ISceneProps) => {
                     triggerAnim: cameraZoomingTowardsWheel,
                 }}
             />
-            <FestivalTable userIsHere={userAtTable} />
             <GroundPlane />
             <GizmoAxis scale={[3, 3, 3]} />
             <mesh >
@@ -202,11 +200,6 @@ const Scene = (props: ISceneProps) => {
 };
 
 const Lightning = () => {
-    const shadowLight = useRef<THREE.DirectionalLight>(null);
-
-    useFrame(() => {
-    });
-
     return (
         <group >
             <ambientLight intensity={.1} />
@@ -254,7 +247,7 @@ const SmallFestival = () => {
 
     const onClickJoin = () => {
 
-    }
+    };
 
     const OnSceneReachedActivityZone = (zoneName: string) => {
         if (zoneName !== 'Start') {
@@ -285,15 +278,17 @@ const SmallFestival = () => {
                            SubscribeToParent={subscribeToRevertMethod} />
                     <fog attach={'fog'} args={['#cfefc4', 20, 200]} />
                 </Suspense >
+
             </Canvas >
 
             {backButtonVisible ? (
                 <div onClick={onClickBack} className={'festivalBack'} >Back</div >
-                ) : (<></>)}
+            ) : (<></>)}
 
             {joinButtonVisible ? (
-                    <div onClick={onClickJoin} className={'festivalJoin'} >Join</div >
+                <div onClick={onClickJoin} className={'festivalJoin'} >Join</div >
             ) : (<></>)}
+
         </div >
     );
 };
