@@ -108,6 +108,7 @@ const Scene = (props: ISceneProps) => {
         setUserAtTable(false);
     });
 
+
     const onBackClick = () => {
         setCameraZoomingTowardsStart(true);
     };
@@ -287,11 +288,12 @@ const SmallFestival = () => {
             </Canvas >
 
             {backButtonVisible ? (
-                <div>
                 <div onClick={onClickBack} className={'festivalBack'} >Back</div >
-                <div onClick={onClickJoin} className={'festivalJoin'} >Join</div >
-                </div>
                 ) : (<></>)}
+
+            {joinButtonVisible ? (
+                    <div onClick={onClickJoin} className={'festivalJoin'} >Join</div >
+            ) : (<></>)}
         </div >
     );
 };

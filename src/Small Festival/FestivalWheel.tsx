@@ -20,8 +20,6 @@ const FestivalWheel = (props: IWheelProps) => {
                 props.nodeObject);
             animAction.loop = THREE.LoopRepeat;
             animAction.play();
-
-            console.log("Anim init", animAction);
         }
 
     }, [props.animations, props.nodeObject]);

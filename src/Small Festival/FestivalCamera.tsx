@@ -35,6 +35,10 @@ const FestivalCamera = (props: IFestivalCamera) => {
 
     const [canLookAround, setCanLookAround] = useState(false);
 
+    const pointerPosZero = useRef<Vector3>(new Vector3());
+    const pointerRightDir = useRef<Vector3>(new Vector3());
+    const pointerUpDir = useRef<Vector3>(new Vector3());
+
 
     const InitializeCamera = (camera: Camera) => {
         if (!cameraRef.current) {
@@ -56,6 +60,7 @@ const FestivalCamera = (props: IFestivalCamera) => {
         targetLookAt: Vector3,
         OnFinishMovement: () => void) => {
 
+        setCurrentLookAt(orbitControls.current.target as Vector3)
         setMovementData({
             startingPos: cameraRef.current.position.clone(),
             targetPos: targetPos,
@@ -83,6 +88,13 @@ const FestivalCamera = (props: IFestivalCamera) => {
                     currentLookAt,
                     animData.zoneTransformData.cameraLookAtTarget,
                     () => {
+                        pointerPosZero.current =
+                            cameraRef.current.localToWorld(new Vector3(0, 0, -1));
+                        pointerRightDir.current =
+                            cameraRef.current.localToWorld(new Vector3(1, 0, 0)).sub(pointerPosZero.current);
+                        pointerUpDir.current =
+                            cameraRef.current.localToWorld(new Vector3(0, 1, 0)).sub(pointerPosZero.current);
+
                         onFinishAnimAdditional?.();
                         animData.onFinishAnim();
                         setInitiatedAnimCondition(false);
@@ -106,6 +118,7 @@ const FestivalCamera = (props: IFestivalCamera) => {
             props.towardsTableAnimData,
             isMovingToTable,
             setIsMovingToTable);
+
 
         CheckForAnimation(
             delta,
@@ -133,13 +146,19 @@ const FestivalCamera = (props: IFestivalCamera) => {
             });
 
         if (canLookAround) {
-            const lookAtTarget = currentLookAt.clone();
-            const cameraFwdVector = lookAtTarget.clone()
-                .sub(cameraRef.current.position)
-                .normalize();
+            orbitControls.current.target =
+                pointerPosZero.current.clone()
+                    .add(pointerRightDir.current.clone()
+                        .multiplyScalar(state.mouse.x * .2))
+                    .add(pointerUpDir.current.clone()
+                        .multiplyScalar(state.mouse.y * .2));
 
-
-            orbitControls.current.target = lookAtTarget;
+            // const lookAtTarget = cameraRef.current.localToWorld(new Vector3(
+            //     state.mouse.x,
+            //     0,
+            //     1));
+            //
+            // orbitControls.current.target = lookAtTarget;
         }
     });
 
@@ -173,7 +192,10 @@ const FestivalCamera = (props: IFestivalCamera) => {
     }, [movementData]);
 
 
-    return <OrbitControls ref={orbitControls} enabled={false} />;
+    return (
+        <>
+            <OrbitControls ref={orbitControls} enabled={false} />
+        </>);
 };
 
 export default FestivalCamera;
