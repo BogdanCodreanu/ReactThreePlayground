@@ -45,6 +45,16 @@ body,
     background: aliceblue;
     padding:20px 70px;
 }
+.festivalJoin {
+    position: absolute;
+    z-index: 10;
+    align-content: center;
+    top: 160px;
+    left: 0;
+    border: 3px solid #282c34;
+    background: aliceblue;
+    padding:20px 70px;
+}
 
 .festivalBackground {
     background: #cfefc4;

@@ -2,10 +2,13 @@ import React, { useEffect, useRef, useState } from "react";
 import { Camera, useFrame } from "react-three-fiber";
 import { Vector3 } from "three";
 import { IAnimationData } from "../utils";
+import { OrbitControls } from "drei";
 
 interface IFestivalCamera {
     towardsTableAnimData: IAnimationData
+    towardsTable2AnimData: IAnimationData
     towardsStartAnimData: IAnimationData
+    towardsWheelAnimData: IAnimationData
 }
 
 interface ICameraMovement {
@@ -19,13 +22,18 @@ interface ICameraMovement {
 
 const FestivalCamera = (props: IFestivalCamera) => {
     const cameraRef = useRef<Camera>(null);
+    const orbitControls = useRef<OrbitControls>(null);
 
     const [currentLookAt, setCurrentLookAt] = useState<Vector3>(new Vector3(0, 0, 0));
     const [movementData, setMovementData] = useState<ICameraMovement>();
     const animSpeed = .6;
 
     const [isMovingToTable, setIsMovingToTable] = useState(false);
+    const [isMovingToTable2, setIsMovingToTable2] = useState(false);
     const [isMovingToStart, setIsMovingToStart] = useState(false);
+    const [isMovingToWheel, setIsMovingToWheel] = useState(false);
+
+    const [canLookAround, setCanLookAround] = useState(false);
 
 
     const InitializeCamera = (camera: Camera) => {
@@ -36,10 +44,8 @@ const FestivalCamera = (props: IFestivalCamera) => {
                 props.towardsStartAnimData.zoneTransformData.cameraPositionTarget.y,
                 props.towardsStartAnimData.zoneTransformData.cameraPositionTarget.z,
             );
-            camera.lookAt(
-                props.towardsStartAnimData.zoneTransformData.cameraLookAtTarget.x,
-                props.towardsStartAnimData.zoneTransformData.cameraLookAtTarget.y,
-                props.towardsStartAnimData.zoneTransformData.cameraLookAtTarget.z);
+            orbitControls.current.target =
+                props.towardsStartAnimData.zoneTransformData.cameraLookAtTarget.clone();
             console.log('festival camera initialized');
         }
     };
@@ -58,6 +64,7 @@ const FestivalCamera = (props: IFestivalCamera) => {
             targetLookAt: targetLookAt,
             OnFinishMovement: OnFinishMovement,
         });
+        setCanLookAround(false);
         console.log("started anim on camera");
     };
 
@@ -65,7 +72,8 @@ const FestivalCamera = (props: IFestivalCamera) => {
         delta: number,
         animData: IAnimationData,
         initiatedAnimCondition: boolean,
-        setInitiatedAnimCondition: (value: boolean) => void) {
+        setInitiatedAnimCondition: (value: boolean) => void,
+        onFinishAnimAdditional?: () => void) {
 
         if (animData.triggerAnim) {
             if (!initiatedAnimCondition) {
@@ -75,6 +83,7 @@ const FestivalCamera = (props: IFestivalCamera) => {
                     currentLookAt,
                     animData.zoneTransformData.cameraLookAtTarget,
                     () => {
+                        onFinishAnimAdditional?.();
                         animData.onFinishAnim();
                         setInitiatedAnimCondition(false);
                     });
@@ -90,6 +99,8 @@ const FestivalCamera = (props: IFestivalCamera) => {
     useFrame((state, delta) => {
         InitializeCamera(state.camera);
 
+        state.camera.updateWorldMatrix(true, true);
+
         CheckForAnimation(
             delta,
             props.towardsTableAnimData,
@@ -101,6 +112,35 @@ const FestivalCamera = (props: IFestivalCamera) => {
             props.towardsStartAnimData,
             isMovingToStart,
             setIsMovingToStart);
+
+
+        CheckForAnimation(
+            delta,
+            props.towardsTable2AnimData,
+            isMovingToTable2,
+            setIsMovingToTable2,
+            () => {
+                setCanLookAround(true);
+            });
+
+        CheckForAnimation(
+            delta,
+            props.towardsWheelAnimData,
+            isMovingToWheel,
+            setIsMovingToWheel,
+            () => {
+
+            });
+
+        if (canLookAround) {
+            const lookAtTarget = currentLookAt.clone();
+            const cameraFwdVector = lookAtTarget.clone()
+                .sub(cameraRef.current.position)
+                .normalize();
+
+
+            orbitControls.current.target = lookAtTarget;
+        }
     });
 
     useEffect(() => {
@@ -120,10 +160,10 @@ const FestivalCamera = (props: IFestivalCamera) => {
                 movementData.targetPos,
                 easedValue);
 
-            cameraRef.current.lookAt(new Vector3().lerpVectors(
+            orbitControls.current.target = new Vector3().lerpVectors(
                 movementData.currentLookAt,
                 movementData.targetLookAt,
-                easedValue));
+                easedValue);
 
             if (lerpValue >= 1) {
                 setCurrentLookAt(movementData.targetLookAt);
@@ -133,7 +173,7 @@ const FestivalCamera = (props: IFestivalCamera) => {
     }, [movementData]);
 
 
-    return null;
+    return <OrbitControls ref={orbitControls} enabled={false} />;
 };
 
 export default FestivalCamera;
