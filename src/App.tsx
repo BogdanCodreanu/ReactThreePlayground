@@ -9,6 +9,7 @@ import Header from "./Header";
 import Chairs from "./Chairs";
 import SmallFestival from "./Small Festival/SmallFestival";
 import ScrollableTrain from "./ScrollTrain/ScrollableTrain";
+import Shader1 from "./shader/Shader1";
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 <Route exact path="/scene4" component={Chairs} />
                 <Route exact path="/scene5" component={SmallFestival} />
                 <Route exact path="/scene6" component={ScrollableTrain} />
+                <Route exact path="/scene7" component={Shader1} />
             </Switch >
         </BrowserRouter >
     );

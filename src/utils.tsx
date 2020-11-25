@@ -1,4 +1,4 @@
-import { Euler, Vector3 } from "three";
+import { Vector3 } from "three";
 
 export const lerp = (val1: number, val2: number, amount: number) => {
     amount = Math.min(amount, 1);

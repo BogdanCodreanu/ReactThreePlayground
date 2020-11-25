@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "react-three-fiber";
+import { Canvas } from "react-three-fiber";
 import { useGLTFLoader } from "drei";
 import * as THREE from "three";
 import { Vector3 } from "three";
@@ -43,8 +43,6 @@ const Scene = (props: ISceneProps) => {
     });
 
     const [canEnterZones, setCanEnterZones] = useState(true);
-
-    const [userAtTable, setUserAtTable] = useState(false);
 
     const [wheel, setWheel] = useState(null);
     const animations = useRef(null);
@@ -104,7 +102,6 @@ const Scene = (props: ISceneProps) => {
 
     useEffect(() => {
         props.SubscribeToParent(onBackClick);
-        setUserAtTable(false);
     });
 
 
@@ -133,7 +130,6 @@ const Scene = (props: ISceneProps) => {
     const onReachTable = () => {
         setCameraZoomingTowardsTable(false);
         setCameraZoomingTowardsTable2(false);
-        setUserAtTable(true);
         props.OnReachedActivityZone('Table');
     };
 
@@ -178,6 +174,7 @@ const Scene = (props: ISceneProps) => {
             <mesh >
                 <primitive object={gltf.scene} dispose={null} />
             </mesh >
+
 
             <ActivitySelect scale={[10, 10, 10]}
                             isVisible={canEnterZones}
