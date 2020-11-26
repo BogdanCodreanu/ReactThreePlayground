@@ -1,7 +1,7 @@
 import React, { Suspense, useRef } from 'react';
 import './App.css';
 import { Canvas, useFrame } from "react-three-fiber";
-import { Html, useGLTFLoader } from "drei";
+import { Html, OrbitControls, useGLTFLoader } from "drei";
 
 
 const Model1 = () => {
@@ -65,6 +65,7 @@ const HTMLContent = () => {
                   scale={[.01, .01, .01]} >
                 <Model3 ></Model3 >
             </mesh >
+            <OrbitControls />
             <mesh castShadow
                   position={[0, 5.5, -12]}
                   rotation={[0, -Math.PI * .5, 0]}

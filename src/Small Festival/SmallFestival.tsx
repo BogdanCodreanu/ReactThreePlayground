@@ -2,20 +2,24 @@ import React, { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Canvas } from "react-three-fiber";
 import { useGLTFLoader } from "drei";
 import * as THREE from "three";
-import { Vector3 } from "three";
+import { Color, Vector3 } from "three";
 import FestivalCamera from "./FestivalCamera";
 import GizmoAxis from "../GizmoAxis";
 import ActivitySelect from "./ActivitySelect";
 import { IActivityZone } from "../utils";
 import FestivalWheel from "./FestivalWheel";
+import Clouds from "./Cloud";
+import { Bloom, EffectComposer, SMAA, SSAO } from "@react-three/postprocessing";
 
 interface ISceneProps {
     OnReachedActivityZone: (zoneName: string) => void
-    SubscribeToParent: (arg0: () => void) => void
+    SubscribeToParent: (arg0: () => void, arg1: () => void) => void
 }
 
 const Scene = (props: ISceneProps) => {
     const gltf = useGLTFLoader('/small festival.gltf', true);
+    const cloudGeometry = (gltf as any).nodes.Cloud.geometry;
+
     const [sceneTraversed, setSceneTraversed] = useState(false);
 
     const [cameraZoomingTowardsStart, setCameraZoomingTowardsStart] = useState(false);
@@ -101,9 +105,13 @@ const Scene = (props: ISceneProps) => {
     }
 
     useEffect(() => {
-        props.SubscribeToParent(onBackClick);
+        props.SubscribeToParent(onBackClick, onJoinClick);
     });
 
+
+    const onJoinClick = () => {
+        console.log("join");
+    };
 
     const onBackClick = () => {
         setCameraZoomingTowardsStart(true);
@@ -192,6 +200,9 @@ const Scene = (props: ISceneProps) => {
                             onClick={onWheelClick} />
 
             <FestivalWheel nodeObject={wheel} animations={animations.current} />
+
+            <Clouds geometry={cloudGeometry} />
+
         </group >
     );
 };
@@ -211,6 +222,7 @@ const Lightning = () => {
                               shadow-camera-near={0.1}
                               shadowBias={-0.002}
                               castShadow
+                              intensity={.6}
             />
         </group >
     );
@@ -226,7 +238,9 @@ const GroundPlane = () => {
               rotation={[-Math.PI * .5, 0, 0]}
               scale={[10000, 10000, 10000]}
               receiveShadow >
-            <shadowMaterial attach={'material'} opacity={.6} />
+            <meshPhongMaterial color={new Color("#23511a")}
+                               attach={'material'}
+                               opacity={.6} />
         </mesh >
     );
 };
@@ -235,6 +249,7 @@ const SmallFestival = () => {
     const [backButtonVisible, setBackButtonVisible] = useState(false);
     const [joinButtonVisible, setJoinButtonVisible] = useState(false);
     const revertFromZoneFunc = useRef(null);
+    const joinClickRef = useRef<() => void>(null);
 
     const onClickBack = () => {
         setBackButtonVisible(false);
@@ -243,7 +258,8 @@ const SmallFestival = () => {
     };
 
     const onClickJoin = () => {
-
+        setJoinButtonVisible(false);
+        joinClickRef.current();
     };
 
     const OnSceneReachedActivityZone = (zoneName: string) => {
@@ -255,8 +271,9 @@ const SmallFestival = () => {
         }
     };
 
-    function subscribeToRevertMethod(forceRevertFromZone: () => void) {
+    function subscribeToRevertMethod(forceRevertFromZone: () => void, joinClick: () => void) {
         revertFromZoneFunc.current = forceRevertFromZone;
+        joinClickRef.current = joinClick;
     }
 
     return (
@@ -267,13 +284,16 @@ const SmallFestival = () => {
             <Canvas className={'festivalBackground'} shadowMap
                     camera={{
                         fov: 70,
-                        far: 200,
+                        near: .1,
+                        far: 300,
                         position: [0, 60, 0],
-                    }} >
+                    }}
+                    style={{background: "#a5c4e5"}}
+            >
                 <Suspense fallback={null} >
                     <Scene OnReachedActivityZone={OnSceneReachedActivityZone}
                            SubscribeToParent={subscribeToRevertMethod} />
-                    <fog attach={'fog'} args={['#cfefc4', 20, 200]} />
+                    <fog far={200} near={70} attach={'fog'} args={['#23511a', 20, 200]} />
                 </Suspense >
 
             </Canvas >

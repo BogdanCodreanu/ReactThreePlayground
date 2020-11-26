@@ -4,6 +4,7 @@ import { Canvas, useFrame } from "react-three-fiber";
 import { Color, Mesh, Vector3 } from "three";
 import { animated } from '@react-spring/three';
 import { MeshWobbleMaterial } from 'drei/shaders/MeshWobbleMaterial';
+import { softShadows } from 'drei';
 
 // softShadows({
 //     frustrum: 3.75,

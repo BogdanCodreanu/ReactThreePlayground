@@ -1,7 +1,7 @@
 import React, { Suspense, useMemo, useState } from "react";
 import { Canvas, useFrame } from "react-three-fiber";
 
-import { useTextureLoader } from "drei";
+import { HTML, useTextureLoader } from "drei";
 import ImageFadeMaterial from "./imageFadeMaterial";
 import { MathUtils } from "three";
 
@@ -30,7 +30,8 @@ const Image = () => {
     useFrame((state, delta) => {
         material.uniforms.dispFactor =
             {
-                value: MathUtils.lerp(material.uniforms.dispFactor.value,
+                value: MathUtils.lerp(
+                    material.uniforms.dispFactor.value,
                     hovered ? 1 : 0,
                     0.05),
             };
@@ -39,15 +40,23 @@ const Image = () => {
 
 
     return (
-        <mesh scale={[3, 3, 1]}
-              rotation={[0, Math.sin(time) * Math.PI / 8, 0]}
-              onPointerOver={(e) => setHovered(true)}
-              onPointerOut={(e) => setHovered(false)}
-              material={material}
-        >
+        <group
+            rotation={[0, Math.sin(time) * Math.PI / 8, 0]} >
 
-            <planeBufferGeometry attach={'geometry'} />
-        </mesh >
+            <HTML position={[0, 2, 0]} >
+                <div >
+                    Hover
+                </div >
+            </HTML >
+            <mesh scale={[3, 3, 1]}
+                  onPointerOver={(e) => setHovered(true)}
+                  onPointerOut={(e) => setHovered(false)}
+                  material={material}
+            >
+
+                <planeBufferGeometry attach={'geometry'} />
+            </mesh >
+        </group >
     );
 };
 

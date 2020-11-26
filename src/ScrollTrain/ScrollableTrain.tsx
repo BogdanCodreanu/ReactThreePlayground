@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "react-three-fiber";
 import TrainRoom from "./TrainRoom";
 import { Color, Vector3 } from "three";
 import { Bloom, EffectComposer, SMAA, SSAO } from "@react-three/postprocessing";
+import { HTML } from "drei";
 
 const initialDist = 15;
 
@@ -57,6 +58,11 @@ const LoadedScrollableTrain = () => {
 
             <fog attach='fog' far={50} near={20} />
             <Suspense fallback={null} >
+                <HTML position={[-7, 0, 0]}>
+                    <div>
+                        Scroll down!
+                    </div>
+                </HTML>
                 <TrainRoom position={new Vector3(0, 0, 0)}
                            color={new Color(.13, .16, .19)}
                            chairsColor={new Color(1, .83, .41)} />

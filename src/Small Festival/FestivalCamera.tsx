@@ -60,7 +60,7 @@ const FestivalCamera = (props: IFestivalCamera) => {
         targetLookAt: Vector3,
         OnFinishMovement: () => void) => {
 
-        setCurrentLookAt(orbitControls.current.target as Vector3)
+        setCurrentLookAt(orbitControls.current.target as Vector3);
         setMovementData({
             startingPos: cameraRef.current.position.clone(),
             targetPos: targetPos,
@@ -91,9 +91,11 @@ const FestivalCamera = (props: IFestivalCamera) => {
                         pointerPosZero.current =
                             cameraRef.current.localToWorld(new Vector3(0, 0, -1));
                         pointerRightDir.current =
-                            cameraRef.current.localToWorld(new Vector3(1, 0, 0)).sub(pointerPosZero.current);
+                            cameraRef.current.localToWorld(new Vector3(1, 0, -1))
+                                .sub(pointerPosZero.current);
                         pointerUpDir.current =
-                            cameraRef.current.localToWorld(new Vector3(0, 1, 0)).sub(pointerPosZero.current);
+                            cameraRef.current.localToWorld(new Vector3(0, 1, -1))
+                                .sub(pointerPosZero.current);
 
                         onFinishAnimAdditional?.();
                         animData.onFinishAnim();
@@ -146,12 +148,20 @@ const FestivalCamera = (props: IFestivalCamera) => {
             });
 
         if (canLookAround) {
-            orbitControls.current.target =
+            const desiredValue =
                 pointerPosZero.current.clone()
                     .add(pointerRightDir.current.clone()
-                        .multiplyScalar(state.mouse.x * .2))
+                        .multiplyScalar(state.mouse.x * 1.2))
                     .add(pointerUpDir.current.clone()
-                        .multiplyScalar(state.mouse.y * .2));
+                        .multiplyScalar(state.mouse.y * .4));
+
+            const currentTarVec = new Vector3(
+                orbitControls.current.target[0],
+                orbitControls.current.target[1],
+                orbitControls.current.target[2]);
+
+            (orbitControls.current.target as Vector3).lerp(
+                desiredValue, .2);
 
             // const lookAtTarget = cameraRef.current.localToWorld(new Vector3(
             //     state.mouse.x,
